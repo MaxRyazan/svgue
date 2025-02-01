@@ -12,8 +12,8 @@ export default defineConfig({
         rollupOptions: {
             external: ["vue"],
             output: {
-                entryFileNames: `[name].js`,
-                assetFileNames: `[name].[ext]`,
+                entryFileNames: `components/[name].js`,
+                assetFileNames: `components/[name].[ext]`,
                 globals: {vue: "Vue"},
                 chunkFileNames(chunkInfo) {
                     return `${chunkInfo.name}.js`
@@ -24,13 +24,17 @@ export default defineConfig({
 
     plugins: [
         vue(),
-        dts({entryRoot: "./src/components", cleanVueFileName: true}),
+        dts({entryRoot: "./src/components", cleanVueFileName: true, outDir: 'dist/components'}),
         viteStaticCopy({
             targets: [
                 {
                     src: "src/index.ts",
                     dest: "",
                     transform: (contents) => contents.toString().replace(/.vue/g, ""),
+                },
+                {
+                    src: "src/config.ts",
+                    dest: "",
                 },
             ],
         })
