@@ -11,8 +11,9 @@
     <div v-if="mode === Mode.usingAxios"></div>
 </template>
 <script setup lang="ts">
-import {computed, getCurrentInstance, ref} from "vue";
+import {computed, getCurrentInstance, onMounted, ref} from "vue";
 import {defaultConfig} from "../config";
+import {SvgueBaseConfig} from "../index";
 /**
  * Vue3 component for render svg icons.
  *
@@ -53,10 +54,7 @@ enum Mode {
     usingIds
 }
 
-interface SvgueBaseConfig {
-    path: string
-}
-
+const config = ref<SvgueBaseConfig|null>(null)
 const props = defineProps<{
     mode?: Mode
     icon?: string
@@ -68,11 +66,19 @@ const props = defineProps<{
 
 const mode = ref(props.mode ?? Mode.usingIds)
 
+function withSlash(param: string) {
+    if(param.endsWith('/')) return param
+    else return param + '/'
+}
 
 const compBasePath = computed(() => {
-    const config = getConfig()
-    if(!config.path.endsWith('/')) config.path = config.path + '/'
-    return props.path ? (props.path.endsWith('/') ? props.path : props.path+'/') : config.path
+    if(props.path) {
+        return withSlash(props.path)
+    }
+    if(config.value && config.value.path) {
+        return withSlash(config.value.path)
+    }
+    else return defaultConfig.path
 })
 
 function getConfig(): Required<SvgueBaseConfig> {
@@ -80,4 +86,14 @@ function getConfig(): Required<SvgueBaseConfig> {
     const overrideConfig = instance?.appContext.config.globalProperties.$svgueConfig
     return overrideConfig ?? defaultConfig
 }
+
+onMounted(() => {
+    config.value = getConfig()
+    if(props.mode === Mode.usingAxios) {
+        if(!config.value || !config.value.axiosInstance) {
+            console.error('No Axios instance found. Please provide config.axiosInstance in main.{js,ts} file, or use "usingIds" mode.')
+            throw new Error('No Axios instance found.')
+        }
+    }
+})
 </script>

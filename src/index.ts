@@ -1,4 +1,5 @@
 import {defaultConfig} from "./config";
+import {AxiosInstance} from "axios";
 
 export {default as Svgue} from './components/Svgue.vue'
 
@@ -10,5 +11,6 @@ export function defineConfig(config: SvgueBaseConfig, app: any) {
 }
 
 export interface SvgueBaseConfig {
-    path?: string
+    path?: string,
+    axiosInstance?: AxiosInstance | null,
 }

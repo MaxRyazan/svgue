@@ -1,5 +1,6 @@
 import {SvgueBaseConfig} from "./index";
 
 export let defaultConfig: Required<SvgueBaseConfig> = {
-    path: '/'
+    path: '/',
+    axiosInstance: null
 }
