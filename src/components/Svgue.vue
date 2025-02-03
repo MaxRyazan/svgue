@@ -1,5 +1,5 @@
 <template>
-    <svg v-if="mode === Mode.usingIds"
+    <svg v-if="mode === 'usingIds'"
          :style="{
             width: width ??'16px',
             height: height ?? '16px',
@@ -8,7 +8,15 @@
          }">
         <use width="100%" height="100%" :href="compBasePath + icon + `.svg${useId ? '#'+useId : '#svgId'}`"></use>
     </svg>
-    <div v-if="mode === Mode.usingAxios"></div>
+    <div v-if="mode === 'usingAxios'"
+            :style="{
+            width: width ??'16px',
+            height: height ?? '16px',
+            minWidth: width ??'16px',
+            minHeight: height ??'16px',
+         }"
+         class="svgue-svg-container-axios"
+         :id="`${uuid}-${icon}`"></div>
 </template>
 <script setup lang="ts">
 import {computed, getCurrentInstance, onMounted, ref} from "vue";
@@ -49,14 +57,12 @@ import {SvgueBaseConfig} from "../index";
  *      Your svg has attribute id="myIconId",
  *      means the value prop useId="myIconId".
  */
-enum Mode {
-    usingAxios,
-    usingIds
-}
 
+const alphabet: string[] = ["A", "B", "C", "D", "F", "I", "G", "H", "J", "K", "L", "O", "P", "Q", "W", "S"];
+const uuid = ref("svgue-");
 const config = ref<SvgueBaseConfig|null>(null)
 const props = defineProps<{
-    mode?: Mode
+    mode?: 'usingAxios' | 'usingIds'
     icon?: string
     path?: string
     useId?: string
@@ -64,12 +70,32 @@ const props = defineProps<{
     height?: string
 }>()
 
-const mode = ref(props.mode ?? Mode.usingIds)
+const mode = ref(props.mode ?? 'usingIds')
 
 function withSlash(param: string) {
     if(param.endsWith('/')) return param
     else return param + '/'
 }
+
+function round(x: number, precision: number){
+    let delimeter = '1';
+    for(let i = 0; i < precision; i++) {
+        delimeter += '0'
+    }
+    const numberDelimeter = Number(delimeter)
+    return Math.round(x * numberDelimeter) / numberDelimeter
+}
+
+const generateUUID = () => {
+    for (let i = 0; i < 6; i++) {
+        const number: number = round(Math.random() * 10, 0);
+        if (number >= 4) {
+            const number = round(Math.random() * 10, 0);
+            uuid.value += alphabet[number];
+        }
+        uuid.value += number;
+    }
+};
 
 const compBasePath = computed(() => {
     if(props.path) {
@@ -87,13 +113,33 @@ function getConfig(): Required<SvgueBaseConfig> {
     return overrideConfig ?? defaultConfig
 }
 
-onMounted(() => {
+
+onMounted(async () => {
     config.value = getConfig()
-    if(props.mode === Mode.usingAxios) {
+    if(props.mode === 'usingAxios') {
         if(!config.value || !config.value.axiosInstance) {
-            console.error('No Axios instance found. Please provide config.axiosInstance in main.{js,ts} file, or use "usingIds" mode.')
-            throw new Error('No Axios instance found.')
+            throw new Error('No Axios instance found. Please provide config.axiosInstance in main.{js,ts} file, or use "usingIds" mode.')
+        }
+        generateUUID();
+        const response = await config.value.axiosInstance.get(`${compBasePath.value}${props.icon}.svg`)
+        if(response?.data) {
+            const container = document.querySelector(`#${uuid.value}-${props.icon}`);
+            if (container) {
+                container.innerHTML = response.data;
+            }
         }
     }
 })
 </script>
+<style scoped>
+.svgue-svg-container-axios {
+    position: relative;
+    & > * {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100% !important;
+        height: 100% !important;
+    }
+}
+</style>
