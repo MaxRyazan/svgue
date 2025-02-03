@@ -2,7 +2,7 @@ Lightweight component for rendering svg icons.
 Typescript supports.  
   
 The component has two types of rendering:  
-1. **usingIds** - using the teleport, loads the required icon in the component. The id attribute is required in the svg.   
+1. **usingIds** - using the "teleport", loads the required icon in the component. The id attribute is required in the svg.   
 2. **usingAxios** - uses the axios instance from the config that is defined by the user.  
 
 ```ts
