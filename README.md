@@ -1,4 +1,5 @@
 Lightweight component for rendering svg icons.  
+Typescript supports.  
   
 The component has two types of rendering:  
 1. **usingIds** - using the teleport, loads the required icon in the component. The id attribute is required in the svg.   
@@ -21,3 +22,29 @@ const props = defineProps<{
     useId - value of attribute "id" in target svg icon.
     width - width of svg.
     height - height of svg.
+
+
+The component supports a config that users can override in their application.  
+
+    path - Set the "path" property to a global value for all components. The global config can be overridden by passing the corresponding prop to the component.  
+    axiosInstance - instance of axios.
+
+```ts
+// main.ts file of your application
+
+import {createApp} from 'vue'
+import App from './App.vue'
+import {defineConfig} from "svgue";
+import axios from "axios"; // or import your axios instance and pass it to the config.
+
+const app = createApp(App)
+
+
+defineConfig({
+    path: '/assets/img/icons/',
+    axiosInstance: axios.create()
+}, app)
+
+app.use(router)
+app.mount('#app')
+```
