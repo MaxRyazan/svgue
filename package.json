@@ -1,5 +1,6 @@
 {
   "name": "svgue",
+  "description": "Vue3 component for render svg icons.",
   "private": true,
   "version": "1.0.0",
   "author": "MaxRzn",
@@ -14,7 +15,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "publish": "npm publish"
   },
   "peerDependencies": {
     "vue": "^3.5.13"
