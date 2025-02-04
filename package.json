@@ -1,7 +1,7 @@
 {
   "name": "svgue",
   "description": "Vue3 component for render svg icons.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "MaxRzn",
   "type": "module",
   "sideEffects": false,
